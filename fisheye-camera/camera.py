@@ -1,3 +1,10 @@
+"""
+camera.py — 即時魚眼特效：從攝影機逐張擷取畫面，套用魚眼映射後顯示
+
+fisheye_effect() 取自課程講義（數位影像處理 Ch14 範例 fisheye_effect.py）：
+以畫面中心為原點換成極座標 (r, θ)，把半徑改成 r²/R 後用 cv2.remap 重新取樣，
+越靠近中心放大越多。本檔案的部分是把它接到攝影機串流做即時處理。
+"""
 import cv2
 import time
 import numpy as np

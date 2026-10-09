@@ -1,3 +1,9 @@
+"""
+snake.py — 只用 OpenCV 繪圖函式做的貪吃蛇遊戲
+
+每 100ms 一幀：在黑色畫布上畫出蛇身與紅色食物，以 W/A/S/D 控制方向；
+吃到食物得 10 分、蛇身變長並隨機產生新食物；碰到視窗邊界就顯示 GAME OVER 與總分並結束。
+"""
 import cv2
 import numpy as np
 import random
