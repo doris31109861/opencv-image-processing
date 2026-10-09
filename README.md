@@ -21,14 +21,23 @@
 ```bash
 # C++（需要 OpenCV 4）
 cd bilinear-resize
-g++ main.cpp -o resize `pkg-config --cflags --libs opencv4`
-./resize            # 輸入 0.1 到 2 之間的縮放倍率
+g++ main.cpp -o bilinear_resize `pkg-config --cflags --libs opencv4`
+./bilinear_resize               # 互動輸入 0.1 到 2 之間的縮放倍率，以視窗顯示結果
+./bilinear_resize 1.5 --save    # 直接指定倍率，結果存到 output/
 
 # Python
 pip install opencv-python numpy
 python fisheye-camera/camera.py
 python snake-game/snake.py
 ```
+
+### 處理結果（bilinear-resize）
+
+以下圖片由 GitHub Actions 實際編譯並執行 `bilinear-resize` 產生（`.github/workflows/build.yml`）：
+
+| 原圖＋簽名 | 灰階（0.1B + 0.6G + 0.3R） | 縮小 0.5x | 放大 1.5x |
+|---|---|---|---|
+| ![](docs/bilinear-resize/original_with_sign.png) | ![](docs/bilinear-resize/grayscale.png) | ![](docs/bilinear-resize/scaled_0.5x.png) | ![](docs/bilinear-resize/scaled_1.5x.png) |
 
 ### 學到的東西
 
@@ -52,12 +61,17 @@ Image processing algorithms written pixel by pixel to understand how OpenCV work
 
 ```bash
 cd bilinear-resize
-g++ main.cpp -o resize `pkg-config --cflags --libs opencv4`
-./resize
+g++ main.cpp -o bilinear_resize `pkg-config --cflags --libs opencv4`
+./bilinear_resize               # prompts for a scale factor, shows windows
+./bilinear_resize 1.5 --save    # scale from argv, writes images to output/
 pip install opencv-python numpy
 python fisheye-camera/camera.py
 python snake-game/snake.py
 ```
+
+### Results (bilinear-resize)
+
+Produced by building and running `bilinear-resize` in GitHub Actions: signed original, grayscale (0.1B + 0.6G + 0.3R), 0.5× and 1.5× — see the table in the Chinese section above.
 
 ### What I learned
 
