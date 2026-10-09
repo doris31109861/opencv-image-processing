@@ -39,6 +39,22 @@ python snake-game/snake.py
 |---|---|---|---|
 | ![](docs/bilinear-resize/original_with_sign.png) | ![](docs/bilinear-resize/grayscale.png) | ![](docs/bilinear-resize/scaled_0.5x.png) | ![](docs/bilinear-resize/scaled_1.5x.png) |
 
+### 魚眼：迴圈版 vs NumPy 向量化（`fisheye-camera/benchmark.py`）
+
+GitHub Actions 上以 640×480 影像實測：
+
+| 版本 | 每幀時間 | 加速 |
+|---|---|---|
+| 原本的雙層 Python 迴圈 | 2484 ms | 1× |
+| NumPy 向量化（含計算映射表） | 91 ms | 27× |
+| NumPy 向量化（映射表已快取，之後每一幀） | 2.3 ms | 約 1000× |
+
+兩版輸出逐像素比對完全相同（最大差值 0）。
+
+| 原圖 | 魚眼 |
+|---|---|
+| ![](docs/fisheye/input.png) | ![](docs/fisheye/fisheye.png) |
+
 ### 學到的東西
 
 - 內插與幾何轉換的數學原理，不依賴內建函式自己實作
@@ -72,6 +88,10 @@ python snake-game/snake.py
 ### Results (bilinear-resize)
 
 Produced by building and running `bilinear-resize` in GitHub Actions: signed original, grayscale (0.1B + 0.6G + 0.3R), 0.5× and 1.5× — see the table in the Chinese section above.
+
+### Fisheye: loop vs NumPy (`fisheye-camera/benchmark.py`)
+
+Measured on GitHub Actions with a 640×480 image: the original Python double loop takes 2484 ms per frame, the vectorised version 91 ms including map construction (27×) and 2.3 ms per frame once the maps are cached (~1000×). Both produce pixel-identical output.
 
 ### What I learned
 
