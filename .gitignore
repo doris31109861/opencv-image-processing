@@ -3,3 +3,5 @@
 *.out
 .vscode/
 .idea/
+bilinear-resize/output/
+bilinear-resize/bilinear_resize

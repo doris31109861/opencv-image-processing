@@ -1,7 +1,16 @@
+/*
+ * main.cpp — 數位影像處理 hw2：加簽名、灰階轉換、雙線性內插縮放（全部手寫，不使用 cv::resize / cvtColor）
+ *
+ * 用法：
+ *   ./bilinear_resize                 互動模式：輸入縮放倍率，結果以視窗顯示（原本的作業行為）
+ *   ./bilinear_resize 1.5             直接指定縮放倍率（0.1~2）
+ *   ./bilinear_resize 1.5 --save      不開視窗，把結果存成 output/*.png（給沒有螢幕的環境或製作 README 圖片）
+ */
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 #include <iostream>
+#include <string>
 using namespace cv;
 using namespace std;
 
@@ -27,7 +36,10 @@ Vec3b getscaledvalue(Mat& image, float x, float y) {
     return interpolated_value;
 }
 
-int main() {
+int main(int argc, char** argv) {
+    // 命令列參數：第 1 個為縮放倍率，加上 --save 則改為存檔不開視窗
+    bool save_only = (argc > 2 && string(argv[2]) == "--save");
+
     //read the picture
     Mat image;
     Mat sign;
@@ -69,8 +81,12 @@ int main() {
 
     // Resize the picture
     float scale_factor;
-    cout << "Enter th scaled range(0.1~2)：";
-    cin >> scale_factor;
+    if (argc > 1) {
+        scale_factor = stof(argv[1]);
+    } else {
+        cout << "Enter th scaled range(0.1~2)：";
+        cin >> scale_factor;
+    }
     Mat scaled_image(image.rows * scale_factor, image.cols * scale_factor, CV_8UC3); // Create a new image
     for (int i = 0; i < scaled_image.rows; i++) {
         for (int j = 0; j < scaled_image.cols; j++) {
@@ -78,6 +94,15 @@ int main() {
             float original_j = j / scale_factor;
             scaled_image.at<Vec3b>(i, j) = getscaledvalue(image, original_j, original_i); // calculate the pixel position
         }
+    }
+
+    // --save：把三張結果存檔後結束
+    if (save_only) {
+        imwrite("output/original_with_sign.png", image);
+        imwrite("output/grayscale.png", grayscale_image);
+        imwrite("output/scaled.png", scaled_image);
+        cout << "saved to output/ (scaled " << scaled_image.cols << "x" << scaled_image.rows << ")" << endl;
+        return 0;
     }
 
     //Show all the pictures

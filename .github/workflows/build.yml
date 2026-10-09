@@ -1,0 +1,32 @@
+# 在 Ubuntu 上安裝 OpenCV、編譯 bilinear-resize 並實際執行，輸出處理前後的圖片
+name: build-bilinear-resize
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install OpenCV
+        run: sudo apt-get update && sudo apt-get install -y libopencv-dev
+
+      - name: Build
+        working-directory: bilinear-resize
+        run: g++ -O2 main.cpp -o bilinear_resize $(pkg-config --cflags --libs opencv4)
+
+      - name: Run (scale 0.5 and 1.5, save images)
+        working-directory: bilinear-resize
+        run: |
+          mkdir -p output
+          ./bilinear_resize 1.5 --save
+          mv output/scaled.png output/scaled_1.5x.png
+          ./bilinear_resize 0.5 --save
+          mv output/scaled.png output/scaled_0.5x.png
+          ls -la output
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bilinear-resize-output
+          path: bilinear-resize/output/
