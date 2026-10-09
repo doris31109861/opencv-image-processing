@@ -1,63 +1,38 @@
 """
 camera.py — 即時魚眼特效：從攝影機逐張擷取畫面，套用魚眼映射後顯示
 
-fisheye_effect() 取自課程講義（數位影像處理 Ch14 範例 fisheye_effect.py）：
-以畫面中心為原點換成極座標 (r, θ)，把半徑改成 r²/R 後用 cv2.remap 重新取樣，
-越靠近中心放大越多。本檔案的部分是把它接到攝影機串流做即時處理。
+魚眼映射在 fisheye.py（原理取自課程講義範例，改寫成 NumPy 向量化並快取映射表）。
+操作：按 s 存下目前畫面（檔名為時間），按 q 離開。
 """
-import cv2
+
 import time
-import numpy as np
 
-def fisheye_effect( f ):
-    nr,nc = f.shape[:2]
-    map_x = np.zeros( [nr, nc], dtype = 'float32' )
-    map_y = np.zeros( [nr, nc], dtype = 'float32' )
-    x0, y0 = nr // 2, nc // 2
-    R = np.sqrt( nr ** 2 + nc ** 2 ) / 2
-    for x in range( nr ):
-        for y in range( nc ):
-            r = np.sqrt( ( x - x0 ) ** 2 + ( y - y0 ) ** 2 )
-            if r == 0:  theta = 0
-            else:       theta = np.arccos( ( x - x0 ) / r )
-            r = ( r * r ) / R
-            if y - y0 < 0:  theta = -theta
-            map_x[x,y] = np.clip( y0 + r * np.sin( theta ), 0, nc - 1 )
-            map_y[x,y] = np.clip( x0 + r * np.cos( theta ), 0, nr - 1 )
-    g = cv2.remap( f, map_x, map_y, cv2.INTER_CUBIC )
-    return g
+import cv2
 
-# 選擇第二隻攝影機
-cap = cv2.VideoCapture(0)
+from fisheye import fisheye_effect
 
-while(True):
-  # 從攝影機擷取一張影像
-  ret, frame = cap.read()
+cap = cv2.VideoCapture(0)  # 0 為預設攝影機
 
-  # 顯示圖片
-  #cv2.imshow('frame', frame)
-  
-  # Filename 
-  filename = 'savedImage.jpg'
+while True:
+    # 從攝影機擷取一張影像
+    ret, frame = cap.read()
+    if not ret:
+        print("讀不到攝影機畫面")
+        break
 
-  # 存圖片
-  localtime = time.localtime()
-  result = time.strftime("%Y-%m-%d-%I-%M-%S", localtime)
-  filename = result+".jpg"
-  print (filename)
-  # cv2.imwrite(filename, frame)
-  img1 = cv2.imread('savedImage.jpg',-1)
-  img2 = cv2.stylization( img1 ) # === 影像處理 ===
-  cv2.imwrite(filename, img2)
-  
-  time.sleep(1) # 每1秒抓一張圖
-  
-  # 若按下 q 鍵則離開迴圈
-  if cv2.waitKey(1) & 0xFF == ord('q'):
-    break
+    # 套用魚眼效果（同尺寸的映射表只在第一幀計算一次）
+    output = fisheye_effect(frame)
+    cv2.imshow('fisheye', output)
 
-# 釋放攝影機
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord('s'):
+        # 以目前時間命名存檔
+        filename = time.strftime("%Y-%m-%d-%H-%M-%S") + ".jpg"
+        cv2.imwrite(filename, output)
+        print("saved", filename)
+    elif key == ord('q'):
+        break
+
+# 釋放攝影機並關閉視窗
 cap.release()
-
-# 關閉所有 OpenCV 視窗
 cv2.destroyAllWindows()

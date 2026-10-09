@@ -26,6 +26,15 @@ jobs:
           mv output/scaled.png output/scaled_0.5x.png
           ls -la output
 
+      # 魚眼：比較迴圈版與向量化版的速度與結果（不需攝影機）
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fisheye benchmark
+        run: |
+          pip install opencv-python-headless numpy
+          cd fisheye-camera && python benchmark.py --save ../bilinear-resize/output/fisheye
+
       - uses: actions/upload-artifact@v4
         with:
           name: bilinear-resize-output

@@ -13,7 +13,7 @@
 | 資料夾 | 語言 | 內容 |
 |---|---|---|
 | `bilinear-resize/` | C++ | **自己實作雙線性內插**，將影像縮放 0.1–2 倍；以加權 RGB 轉灰階；疊加簽名並去除白色背景 |
-| `fisheye-camera/` | Python | 擷取攝影機畫面即時套用**魚眼效果**（魚眼映射函式取自課程講義範例，以極座標映射搭配 `cv2.remap`） |
+| `fisheye-camera/` | Python | 擷取攝影機畫面即時套用**魚眼效果**：映射公式取自課程講義範例（極座標映射＋`cv2.remap`），改寫成 NumPy 向量化並快取映射表；`benchmark.py` 比較迴圈版與向量化版 |
 | `snake-game/` | Python | 完全用 OpenCV 繪圖函式做的貪吃蛇，含鍵盤控制、碰撞偵測與計分 |
 
 ### 編譯與執行
@@ -54,7 +54,7 @@ Image processing algorithms written pixel by pixel to understand how OpenCV work
 | Folder | Language | What it does |
 |---|---|---|
 | `bilinear-resize/` | C++ | Resizes an image 0.1–2× with **hand-written bilinear interpolation**, converts to grayscale with a weighted RGB sum, and overlays a signature with white-background removal |
-| `fisheye-camera/` | Python | Applies a **fisheye distortion** to live webcam frames (the mapping function comes from the course handout: polar-coordinate remap with `cv2.remap`) |
+| `fisheye-camera/` | Python | Applies a **fisheye distortion** to live webcam frames. The mapping formula comes from the course handout (polar-coordinate remap with `cv2.remap`); it is vectorised with NumPy and cached per frame size, and `benchmark.py` compares it with the original loop |
 | `snake-game/` | Python | A Snake game drawn entirely with OpenCV primitives, with keyboard control, collision detection and scoring |
 
 ### Build & Run
